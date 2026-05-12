@@ -1,11 +1,10 @@
 /**
- * Ball Catcher — physics simulation + WebSocket client
+ * Wallplay — Falling Balls renderer + WebSocket client
  *
- * Physics: Matter.js 0.19
- * Screen:  1920×1080
- * Balls:   20 yellow hollow-plastic spheres (10g), spawning every 0.5s
- *          from x=1280 (border of middle/right thirds), y=0
- * Obstacles: red paper blocks received from WebSocket (camera detection)
+ * Physics:   Matter.js 0.19
+ * Canvas:    1920×1080 logical
+ * Balls:     yellow spheres spawn every SPAWN_INTERVAL ms at (SPAWN_X, top)
+ * Obstacles: red paper polygons streamed over WebSocket from server.py
  */
 
 "use strict";

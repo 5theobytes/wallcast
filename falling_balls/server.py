@@ -167,7 +167,7 @@ def debug_window_thread(q: queue.Queue):
     Homography updates live in the camera thread via _sh['manual'].
     """
 
-    WIN = "Ball Catcher - Debug  [drag corners | a=auto | s=save | r=reset | q=quit]"
+    WIN = "Wallplay (Falling Balls) — Debug  [drag corners | a=auto | s=save | r=reset | q=quit]"
     cv2.namedWindow(WIN, cv2.WINDOW_NORMAL)
     cv2.resizeWindow(WIN, DISP_W, DISP_H)
 

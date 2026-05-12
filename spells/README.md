@@ -1,7 +1,8 @@
 # Spells
 
-Camera tracks your hand. Open palm releases beams of light along the fingers; turn the
-palm to face the camera and the spell bursts into a cloud of glowing particles.
+Camera tracks your hand. Open palm shoots streaks along the fingers; palm facing the
+camera releases a burst of glowing particles — the "spell" gesture (see
+`spell_orientation` in `detector.py`).
 
 ## Architecture
 
@@ -75,7 +76,7 @@ $adb = "$env:LOCALAPPDATA\Android\Sdk\platform-tools\adb.exe"
 `start.bat` does this automatically every 10 seconds when ADB is present.
 
 Then on the phone open `http://localhost:8000/shared/phone_camera.html` — `localhost` is
-tunneled to the PC via ADB. Status on the page should turn green ("Подключено — стриминг").
+tunneled to the PC via ADB. Status on the page should turn green ("Connected — streaming").
 
 ## Screen calibration
 
