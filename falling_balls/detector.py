@@ -1,7 +1,4 @@
-"""
-Object detector: red paper obstacles + yellow projected balls.
-Uses MediaPipe framework with OpenCV HSV color segmentation.
-"""
+"""Object detector: red paper obstacles + yellow projected balls (OpenCV HSV)."""
 
 import cv2
 import numpy as np
@@ -61,7 +58,6 @@ class Detector:
     """
     Detects red paper obstacles and yellow balls from a camera frame.
     Uses OpenCV HSV color segmentation (fast, reliable for known colors).
-    MediaPipe ImageSegmenter is available for more complex scenes if needed.
     """
 
     def __init__(self):

@@ -36,7 +36,7 @@ def kill_ports():
 
 def setup_adb():
     if not ADB.exists():
-        print("[ADB] adb.exe не найден — пропускаю")
+        print("[ADB] adb.exe not found — skipping")
         return
     try:
         r1 = subprocess.run([str(ADB), "reverse", "tcp:8000", "tcp:8000"],
@@ -44,21 +44,21 @@ def setup_adb():
         r2 = subprocess.run([str(ADB), "reverse", "tcp:8766", "tcp:8766"],
                             capture_output=True, text=True)
         if "error" in (r1.stderr + r2.stderr).lower():
-            print("[ADB] Телефон не найден — USB не подключён?")
+            print("[ADB] Phone not detected — USB not connected?")
         else:
-            print("[ADB] Порты пробросены: 8000, 8766")
+            print("[ADB] Ports forwarded: 8000, 8766")
     except Exception as e:
-        print(f"[ADB] Ошибка: {e}")
+        print(f"[ADB] Error: {e}")
 
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("--rotate", type=int, default=0, choices=[0,90,180,270],
-                   help="Повернуть кадр телефона (0/90/180/270)")
+                   help="Rotate phone camera frame (0/90/180/270)")
     args = p.parse_args()
 
     os.chdir(HERE)
 
-    print("Останавливаю старые процессы...")
+    print("Stopping old processes...")
     kill_ports()
     time.sleep(0.8)
 
@@ -79,7 +79,7 @@ def main():
     p_server = subprocess.Popen(server_cmd)
 
     def cleanup():
-        print("\nОстанавливаю серверы...")
+        print("\nStopping servers...")
         for proc in (p_server, p_serve):
             try:
                 proc.terminate()
@@ -91,12 +91,12 @@ def main():
     atexit.register(cleanup)
 
     print()
-    print("  Браузер : http://localhost:8000/spells/index.html")
-    print("  Телефон : http://localhost:8000/shared/phone_camera.html")
+    print("  Browser : http://localhost:8000/spells/index.html")
+    print("  Phone   : http://localhost:8000/shared/phone_camera.html")
     if args.rotate:
-        print(f"  Поворот : {args.rotate}°")
+        print(f"  Rotate  : {args.rotate}°")
     print()
-    print("  Закрой это окно или нажми Ctrl+C чтобы остановить всё.")
+    print("  Close this window or press Ctrl+C to stop everything.")
     print()
 
     # ── ADB watchdog: повторно пробрасываем порты каждые 10 сек ─────────────

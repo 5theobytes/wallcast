@@ -27,3 +27,6 @@ hand_sparks/CLAUDE.md
 # User calibration data — keep the .example.json template
 **/calibration/calibration_data.json
 !**/calibration/calibration_data.example.json
+
+# Internal review / brainstorm materials — not published
+review/

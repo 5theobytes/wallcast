@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
@@ -48,11 +48,11 @@
   </style>
 </head>
 <body>
-  <div id="status" class="yellow">Запуск камеры...</div>
+  <div id="status" class="yellow">Starting camera...</div>
   <div id="stats">fps: — | frame: —</div>
   <div id="wsurl">WS: —</div>
   <video id="preview" autoplay playsinline muted></video>
-  <button onclick="togglePause()">Пауза</button>
+  <button onclick="togglePause()">Pause</button>
 
   <canvas id="canvas" style="display:none"></canvas>
 
@@ -110,10 +110,10 @@
         canvas.width  = tw;
         canvas.height = th;
 
-        setStatus("Камера OK — подключение...", "yellow");
+        setStatus("Camera OK — connecting...", "yellow");
         connect();
       } catch (e) {
-        setStatus("Ошибка камеры: " + e.message, "red");
+        setStatus("Camera error: " + e.message, "red");
       }
     }
 
@@ -123,15 +123,15 @@
       ws.binaryType = "arraybuffer";
 
       ws.onopen = () => {
-        setStatus("Подключено — стриминг", "green");
+        setStatus("Connected — streaming", "green");
         scheduleFrame();
       };
       ws.onclose = () => {
-        setStatus("Отключено — реконнект...", "yellow");
+        setStatus("Disconnected — reconnecting...", "yellow");
         clearTimeout(sendTimer);
         setTimeout(connect, 2000);
       };
-      ws.onerror = () => setStatus("WS ошибка", "red");
+      ws.onerror = () => setStatus("WS error", "red");
     }
 
     function scheduleFrame() {
@@ -168,7 +168,7 @@
 
     function togglePause() {
       paused = !paused;
-      document.querySelector("button").textContent = paused ? "Возобновить" : "Пауза";
+      document.querySelector("button").textContent = paused ? "Resume" : "Pause";
     }
 
     startCamera();
