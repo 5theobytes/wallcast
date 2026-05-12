@@ -66,21 +66,21 @@ Ball physics — in `js/app.js`:
 
 | Constant            | Default | Meaning                              |
 |---------------------|---------|--------------------------------------|
-| `BALL_COUNT`        | 20      | Total balls spawned                  |
 | `SPAWN_INTERVAL`    | 500 ms  | Time between spawns                  |
-| `BALL_SPAWN_X`      | 1280 px | X coordinate of spawn point          |
+| `SPAWN_X`           | 1280 px | X coordinate of spawn point          |
 | `BALL_RADIUS`       | 20 px   | Visual radius                        |
 | `BALL_RESTITUTION`  | 0.62    | Bounciness (0 dead, 1 perfect)       |
 | `BALL_DENSITY`      | 0.0005  | Matter.js density (light plastic)    |
 | `BALL_FRICTION_AIR` | 0.008   | Air drag                             |
 
-Paper detection — in `detector.py`:
+Paper detection — in `detector.py`. Red wraps around 180° in HSV, so two bands are
+needed (low + high):
 
-| Constant         | Default | Meaning                                  |
-|------------------|---------|------------------------------------------|
-| `MIN_PAPER_AREA` | 2000 px² | Minimum contour area to count as a paper |
-| `RED_LOWER1/2`   | H 0–10° | Lower red HSV band                       |
-| `RED_UPPER1/2`   | H 160–180° | Upper red HSV band                    |
+| Constant       | Default     | Meaning                                              |
+|----------------|-------------|------------------------------------------------------|
+| `MIN_PAPER_AREA` | 2000 px²  | Minimum contour area to count as a paper             |
+| `RED_LOWER1` / `RED_UPPER1` | H 0–10°    | Low-hue red band (HSV)                |
+| `RED_LOWER2` / `RED_UPPER2` | H 160–180° | High-hue red band (HSV, wraps around) |
 
 ## Tests
 
