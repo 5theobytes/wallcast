@@ -12,42 +12,47 @@ Debug window keys:
     [q]   — quit debug window
 """
 
-import argparse
-import asyncio
-import json
-import logging
-import queue
-import socket
 import sys
-import threading
 from pathlib import Path
 
-import cv2
-import numpy as np
-import websockets
-import websockets.exceptions
-from detector import Detector
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
+import argparse  # noqa: E402
+import asyncio  # noqa: E402
+import json  # noqa: E402
+import logging  # noqa: E402
+import queue  # noqa: E402
+import threading  # noqa: E402
+
+import cv2  # noqa: E402
+import numpy as np  # noqa: E402
+import websockets  # noqa: E402
+import websockets.exceptions  # noqa: E402
+from detector import Detector  # noqa: E402
+
+from shared.wallplay_core.config import (  # noqa: E402
+    CAM_H,
+    CAM_W,
+    DISP_H,
+    DISP_W,
+    PHONE_CAM_PORT,
+    SCREEN_CORNERS,
+    SCREEN_H,
+    SCREEN_W,
+    TARGET_FPS,
+    WS_PORT,
+)
+from shared.wallplay_core.homography import (  # noqa: E402
+    linear_fallback,
+    load_homography_file,
+    transform_point,
+    transform_points,
+)
+from shared.wallplay_core.netutil import get_local_ip  # noqa: E402
 
 # ── Config ────────────────────────────────────────────────────────────────────
 
-SCREEN_W, SCREEN_H = 1920, 1080
-CAM_W, CAM_H = 1280, 720
-WS_PORT = 8765
-PHONE_CAM_PORT = 8766  # phone sends JPEG frames here
-TARGET_FPS = 30
 CALIBRATION_FILE = Path(__file__).parent / "calibration" / "calibration_data.json"
-DISP_W, DISP_H = 960, 540  # debug window size
-
-
-def get_local_ip() -> str:
-    try:
-        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.connect(("8.8.8.8", 80))
-        ip = s.getsockname()[0]
-        s.close()
-        return ip
-    except Exception:
-        return "localhost"
 
 
 try:
@@ -61,21 +66,13 @@ logging.basicConfig(
 )
 log = logging.getLogger(__name__)
 
-SCREEN_CORNERS = np.array(
-    [
-        [0, 0],
-        [SCREEN_W - 1, 0],
-        [SCREEN_W - 1, SCREEN_H - 1],
-        [0, SCREEN_H - 1],
-    ],
-    dtype=np.float32,
-)
-
 CORNER_COLORS = [(50, 220, 50), (50, 200, 255), (255, 100, 50), (180, 50, 255)]
 CORNER_NAMES = ["TL", "TR", "BR", "BL"]
 
 # ── Shared state ──────────────────────────────────────────────────────────────
 # Written by camera thread, read by WS handlers + debug thread.
+# TODO(PR 4 follow-up): wrap _sh in a CameraSnapshot dataclass to remove
+# implicit aliasing. shared.wallplay_core.snapshot.CameraSnapshot is ready.
 
 _sh = {
     "frame": None,  # latest camera frame (np.ndarray)
@@ -94,35 +91,32 @@ _threads: list[threading.Thread] = []
 
 
 def load_homography() -> np.ndarray:
-    if CALIBRATION_FILE.exists():
-        data = json.loads(CALIBRATION_FILE.read_text(encoding="utf-8"))
-        src = np.array(data["camera_points"], dtype=np.float32)
-        dst = np.array(data["screen_points"], dtype=np.float32)
-        M = cv2.getPerspectiveTransform(src, dst)
+    M = load_homography_file(CALIBRATION_FILE)
+    if M is not None:
         log.info("Calibration loaded from %s", CALIBRATION_FILE)
         return M
-
     log.warning(
         "No calibration file - linear scale %dx%d -> %dx%d", CAM_W, CAM_H, SCREEN_W, SCREEN_H
     )
-    sx, sy = SCREEN_W / CAM_W, SCREEN_H / CAM_H
-    return np.array([[sx, 0, 0], [0, sy, 0], [0, 0, 1]], dtype=np.float64)
+    return linear_fallback()
 
 
 # ── Coordinate transform ──────────────────────────────────────────────────────
 
 
 def _xform_pt(M, x, y):
-    pt = np.array([[[x, y]]], dtype=np.float32)
-    out = cv2.perspectiveTransform(pt, M)
-    return float(out[0][0][0]), float(out[0][0][1])
+    """Backward-compatible alias for transform_point — kept for tests/external callers."""
+    return transform_point(M, x, y)
 
 
 def transform_obstacles(obstacles, M) -> list[dict]:
     result = []
     for obs in obstacles:
-        tx, ty = _xform_pt(M, obs.cx, obs.cy)
-        tverts = [list(_xform_pt(M, vx, vy)) for vx, vy in obs.vertices]
+        # Batch transform: 1 center + N vertices in a single cv2 call
+        batch = [[obs.cx, obs.cy], *obs.vertices]
+        tpts = transform_points(M, batch)
+        tx, ty = float(tpts[0, 0]), float(tpts[0, 1])
+        tverts = tpts[1:].tolist()
         pts = np.array(tverts, dtype=np.float32)
         rect = cv2.minAreaRect(pts)
         (_, _), (w, h), angle = rect

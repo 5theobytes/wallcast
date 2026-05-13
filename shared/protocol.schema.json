@@ -1,0 +1,54 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Wallplay WebSocket protocol",
+  "description": "Payloads sent from server.py to the browser on port 8765. One of two shapes depending on mode.",
+  "oneOf": [
+    {
+      "type": "object",
+      "required": ["type", "obstacles"],
+      "properties": {
+        "type": {"const": "obstacles"},
+        "obstacles": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "cx", "cy", "w", "h", "angle", "vertices"],
+            "properties": {
+              "id": {"type": "string"},
+              "cx": {"type": "number"},
+              "cy": {"type": "number"},
+              "w": {"type": "number"},
+              "h": {"type": "number"},
+              "angle": {"type": "number"},
+              "vertices": {
+                "type": "array",
+                "items": {
+                  "type": "array",
+                  "items": {"type": "number"},
+                  "minItems": 2,
+                  "maxItems": 2
+                }
+              }
+            }
+          }
+        },
+        "screen": {"type": "string", "enum": ["screen_ok", "screen_lost", "no_camera"]}
+      }
+    },
+    {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": {"const": "hand"},
+        "detected": {"type": "boolean"},
+        "palm_center": {"type": ["array", "null"]},
+        "fingertips": {"type": ["array", "null"]},
+        "hand_dir": {"type": ["array", "null"]},
+        "orientation": {"type": ["string", "null"]},
+        "gesture": {"type": ["string", "null"]},
+        "velocity": {"type": ["array", "null"]},
+        "spell": {"type": ["object", "null"]}
+      }
+    }
+  ]
+}

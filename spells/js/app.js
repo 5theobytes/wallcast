@@ -179,6 +179,11 @@ class App {
 
   _onMessage(msg) {
     if (msg.type !== "hand") return;
+    // Shape guard — matches shared/protocol.schema.json (hand variant)
+    if (msg.hand !== null && msg.hand !== undefined && typeof msg.hand !== "object") {
+      console.warn("Protocol mismatch: expected hand to be object or null", msg);
+      return;
+    }
     this.handState   = msg.hand || null;
     this.currentSpell = msg.spell || null;
   }
