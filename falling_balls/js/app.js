@@ -44,7 +44,7 @@ const {
 
 // ── BallCatcher app ───────────────────────────────────────────────────────────
 
-class BallCatcher {
+export class BallCatcher {
   constructor() {
     this.canvas   = document.getElementById("canvas");
     this.ctx      = this.canvas.getContext("2d");
@@ -140,7 +140,12 @@ class BallCatcher {
       let data;
       try { data = JSON.parse(evt.data); } catch { return; }
       if (data.type === "obstacles") {
-        this._updatePapers(data.obstacles || []);
+        // Shape guard — matches shared/protocol.schema.json (obstacles variant)
+        if (!Array.isArray(data.obstacles)) {
+          console.warn("Protocol mismatch: expected obstacles[]", data);
+          return;
+        }
+        this._updatePapers(data.obstacles);
         if (data.screen === "screen_ok")   this._setStatus("Connected  |  screen OK", "#2a7a2a");
         if (data.screen === "screen_lost") this._setStatus("Connected  |  screen lost", "#7a6a00");
         if (data.screen === "no_camera")   this._setStatus("Connected  |  no camera",  "#a00");
@@ -341,5 +346,6 @@ class BallCatcher {
 }
 
 // ── Boot ─────────────────────────────────────────────────────────────────────
+// ES modules are defer-by-default; DOM is ready by the time this line runs.
 
-window.addEventListener("load", () => { new BallCatcher(); });
+new BallCatcher();
