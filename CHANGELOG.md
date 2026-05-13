@@ -12,7 +12,7 @@ _Nothing yet._
 
 First tagged release. The repository was already public for a few iterations
 before this point; v0.1.0 captures the state after the initial polish pass
-(PR 1–5).
+after a polish pass.
 
 ### Added
 
@@ -77,7 +77,7 @@ before this point; v0.1.0 captures the state after the initial polish pass
   `phone_camera.html` and `spells/start.py` user-facing strings localised
   to English.
 - Legacy product-name wording cleared from six title-bars and docstrings
-  (the `BallCatcher` class name kept intentionally — see PR 1 notes).
+  (the `BallCatcher` class name kept intentionally — see release notes).
 - `falling_balls/js/app.js` now an ES module with `export class BallCatcher`,
   guarded by a `MAX_BALLS = 20` cap and a `document.hidden` spawn-skip.
 - `logging.basicConfig` no longer reopens `sys.stdout.fileno()` — fixes

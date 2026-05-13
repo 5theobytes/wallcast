@@ -71,7 +71,7 @@ CORNER_NAMES = ["TL", "TR", "BR", "BL"]
 
 # ── Shared state ──────────────────────────────────────────────────────────────
 # Written by camera thread, read by WS handlers + debug thread.
-# TODO(PR 4 follow-up): wrap _sh in a CameraSnapshot dataclass to remove
+# TODO: wrap _sh in a CameraSnapshot dataclass to remove
 # implicit aliasing. shared.wallcast_core.snapshot.CameraSnapshot is ready.
 
 _sh = {

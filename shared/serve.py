@@ -65,7 +65,7 @@ def main() -> None:
     with socketserver.TCPServer(("0.0.0.0", PORT), handler) as httpd:
         print(f"\n  Landing page      : http://localhost:{PORT}/")
         print(f"  Falling Balls     : http://localhost:{PORT}/falling_balls/index.html")
-        print(f"  Spells       : http://localhost:{PORT}/spells/index.html")
+        print(f"  Spells            : http://localhost:{PORT}/spells/index.html")
         print(f"  Phone camera page : http://{local_ip}:{PORT}/shared/phone_camera.html")
         print("\n  Open the phone camera URL on your phone (same WiFi).")
         print("  Press Ctrl+C to stop.\n")
